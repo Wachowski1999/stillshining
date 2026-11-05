@@ -218,6 +218,10 @@ h2 {
 .intro .art {
   background: radial-gradient(ellipse at 50% 42%, #a42b20 0%, #6d100d 55%, #2a0705 100%);
 }
+#bg::-webkit-media-controls,
+#bg::-webkit-media-controls-start-playback-button,
+#bg::-webkit-media-controls-overlay-play-button,
+#bg::-webkit-media-controls-panel { display: none !important; -webkit-appearance: none; opacity: 0; }
 .intro video, .intro .bgfx {
   position: absolute;
   inset: 0;
@@ -645,29 +649,29 @@ h1 {
   if (video) {
     video.muted = true;
     video.defaultMuted = true;
+    var fx = document.getElementById('bgfx');
+    /* autoplay blocked (e.g. low power mode): show the animated image instead; the video takes over on the first tap */
+    function showFx() {
+      if (!fx || !video.paused) return;
+      if (!fx.getAttribute('src')) fx.src = 'img/diamond-anim.webp';
+      fx.hidden = false;
+      video.style.visibility = 'hidden';
+    }
     var start = function () {
       if (!video.paused) return;
       var p = video.play();
-      if (p && p.catch) p.catch(function () { /* blocked: poster frame stays until the next touch */ });
+      if (p && p.catch) p.catch(function () { showFx(); });
     };
     start();
     video.addEventListener('canplay', start);
     var evs = ['touchstart', 'touchend', 'pointerup', 'click', 'scroll', 'keydown'];
     var retry = function () { start(); };
     evs.forEach(function (ev) { window.addEventListener(ev, retry, { passive: true }); });
-    var fx = document.getElementById('bgfx');
     video.addEventListener('playing', function () {
       evs.forEach(function (ev) { window.removeEventListener(ev, retry); });
       if (fx) { fx.hidden = true; fx.removeAttribute('src'); video.style.visibility = ''; }
     });
-    /* autoplay blocked (e.g. low power mode): show the animated image instead; the video takes over on first tap */
-    setTimeout(function () {
-      if (video.paused && fx) {
-        fx.src = 'img/diamond-anim.webp';
-        fx.hidden = false;
-        video.style.visibility = 'hidden';
-      }
-    }, 1500);
+    setTimeout(showFx, 1500);
     document.addEventListener('visibilitychange', function () { if (!document.hidden) start(); });
   }
 

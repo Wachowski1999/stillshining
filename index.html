@@ -753,8 +753,8 @@ canvas.confetti { position: absolute; inset: 0; width: 100%; height: 100%; point
     if (auto && 'IntersectionObserver' in window) {
       new IntersectionObserver(function (en) {
         en.forEach(function (e) {
-          if (e.isIntersecting && armed) { armed = false; clearTimeout(timer); timer = setTimeout(burst, 700); }
-          else if (!e.isIntersecting) { armed = true; clearTimeout(timer); }
+          if (e.isIntersecting && armed) { clearTimeout(timer); timer = setTimeout(function () { armed = false; burst(); }, 700); }
+          else if (!e.isIntersecting) clearTimeout(timer);
         });
       }, { threshold: 0.6 }).observe(sec);
     }

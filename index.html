@@ -174,6 +174,37 @@ h2 {
 .btn.solid { background: var(--red-btn); border-color: var(--red-btn); color: var(--white); }
 .btn.solid:hover, .btn.solid:active { background: var(--white); border-color: var(--white); color: var(--red-btn); }
 
+/* ---------- next button ---------- */
+.stop { padding-bottom: max(5rem, calc(4.4rem + env(safe-area-inset-bottom, 0px))); }
+.nx {
+  position: absolute;
+  left: 0;
+  right: var(--rail);
+  bottom: max(1.1rem, calc(.6rem + env(safe-area-inset-bottom, 0px)));
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+.nx a {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: .55rem 1.2rem;
+  border: 1.5px solid var(--ice);
+  border-radius: 999px;
+  background: rgba(9, 12, 17, .35);
+  color: var(--white);
+  font-family: var(--mono);
+  font-size: .85rem;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color .15s, color .15s, border-color .15s;
+}
+.nx a:hover, .nx a:active { background: var(--white); border-color: var(--white); color: var(--ink); }
+.nx a:focus-visible { outline: 3px solid var(--white); outline-offset: 3px; }
+
 /* ---------- 0 intro ---------- */
 .intro { padding-top: max(1.5rem, env(safe-area-inset-top, 0px)); }
 .intro .art {
@@ -476,6 +507,7 @@ h1 {
         <span>05.12</span>
       </p>
     </div>
+    <div class="nx"><a href="#bar">next: stefan's bar ↓</a></div>
   </section>
 
   <section class="stop pic bar" id="bar">
@@ -494,6 +526,7 @@ h1 {
         <a class="btn" href="#arrive">how to get there ↓</a>
       </div>
     </div>
+    <div class="nx"><a href="#club">next: das zimmer ↓</a></div>
   </section>
 
   <section class="stop club" id="club">
@@ -514,6 +547,7 @@ h1 {
         <a class="btn" href="https://open.spotify.com/artist/2BQUuySnRDqpQq5Xn7oA4i" target="_blank" rel="noopener noreferrer">sound ↗</a>
       </div>
     </div>
+    <div class="nx"><a href="#arrive">next: getting there ↓</a></div>
   </section>
 
   <section class="stop arrive" id="arrive">
@@ -558,6 +592,7 @@ h1 {
         </div>
       </div>
     </div>
+    <div class="nx"><a href="#intro">back to top ↑</a></div>
   </section>
 </main>
 

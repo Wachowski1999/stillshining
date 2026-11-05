@@ -291,8 +291,9 @@ h1 {
   text-wrap: pretty;
   text-shadow: 0 1px 12px rgba(20, 0, 0, .6);
 }
+.mid { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .intro .mono b { font-weight: 700; color: var(--ice); }
-#confetti { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+canvas.confetti { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
 .date {
   display: flex;
   align-items: center;
@@ -527,14 +528,14 @@ h1 {
       <img class="bgfx" id="bgfx" alt="" hidden width="320" height="577">
     </div>
     <div class="scrim" aria-hidden="true"></div>
-    <canvas id="confetti" aria-hidden="true"></canvas>
+    <canvas class="confetti" aria-hidden="true"></canvas>
     <div class="top rise">
       <h1 class="rise">still shining</h1>
       <p class="tag rise">another year. another reason to dance.</p>
     </div>
     <div class="bottom rise">
       <p class="lead">one more trip around the sun, so i'd love to celebrate my birthday with you.</p>
-      <p class="mono">you're invited: drinks and snacks first, dancing into <span id="mid">midnight</span> later.</p>
+      <p class="mono">you're invited: drinks and snacks first, dancing into <span class="mid">midnight</span> later.</p>
       <p class="date" aria-label="04.12 to 05.12">
         <span>04.12</span>
         <svg viewBox="0 0 48 16" aria-hidden="true" focusable="false"><path d="M1 8h44M38 1.5 45.5 8 38 14.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -564,6 +565,7 @@ h1 {
 
   <section class="stop club" id="club">
     <div class="art" aria-hidden="true"></div>
+    <canvas class="confetti" aria-hidden="true"></canvas>
     <p class="eyebrow"><b>2</b> / 2</p>
     <div>
       <h2>act II&nbsp; //&nbsp; into the night</h2>
@@ -573,7 +575,7 @@ h1 {
         <p>fri, 04.12.2026 · 23:00 onwards</p>
         <p><span class="nw">alejandrø (host)</span> &amp; <span class="nw">kø:lab (main act)</span></p>
       </div>
-      <p class="note">i'm playing from 23:00. my birthday starts at midnight, right in the middle of my set.</p>
+      <p class="note">i'm playing from 23:00. my birthday starts at <span class="mid">midnight</span>, right in the middle of my set.</p>
       <p class="guest">family &amp; friend guestlist. message me for reduced tickets.</p>
       <div class="btns">
         <a class="btn solid" href="https://maps.app.goo.gl/rdpX1y7iue5greTg7" target="_blank" rel="noopener noreferrer">map ↗</a>
@@ -708,52 +710,57 @@ h1 {
   }
 })();
 
-/* confetti burst from the word "midnight" */
+/* confetti burst from the word "midnight": automatic on arrival, and on tap (easter egg) */
 (function () {
-  var word = document.getElementById('mid'), cv = document.getElementById('confetti'), sec = document.getElementById('intro');
-  if (!word || !cv || !sec) return;
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var ctx = cv.getContext('2d'), parts = [], raf = 0, timer = 0, armed = true;
   var cols = ['#d3dee3', '#ffffff', '#e5321e', '#ff6a55', '#9fb4bd'];
-  function fit() {
-    var r = sec.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
-    cv.width = r.width * d; cv.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0);
-  }
-  function burst() {
-    fit();
-    var r = word.getBoundingClientRect(), s = sec.getBoundingClientRect();
-    var ox = r.left - s.left + r.width / 2, oy = r.top - s.top + r.height / 2;
-    parts = [];
-    for (var i = 0; i < 90; i++) {
-      var an = -Math.PI / 2 + (Math.random() - .5) * Math.PI * 1.15, v = 3 + Math.random() * 9;
-      parts.push({ x: ox + (Math.random() - .5) * r.width * .8, y: oy, vx: Math.cos(an) * v, vy: Math.sin(an) * v,
-        w: 4 + Math.random() * 4, h: 7 + Math.random() * 5, rot: Math.random() * 6, vr: (Math.random() - .5) * .22,
-        c: cols[i % cols.length], life: 0, max: 170 + Math.random() * 90, ph: Math.random() * 6 });
+  function setup(sec) {
+    var word = sec.querySelector('.mid'), cv = sec.querySelector('canvas.confetti');
+    if (!word || !cv) return;
+    var ctx = cv.getContext('2d'), parts = [], raf = 0, timer = 0, armed = true;
+    function fit() {
+      var r = sec.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+      cv.width = r.width * d; cv.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0);
     }
-    cancelAnimationFrame(raf); raf = requestAnimationFrame(step);
-  }
-  function step() {
-    var w = cv.width, h = cv.height; ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, w, h); ctx.restore();
-    var alive = 0;
-    parts.forEach(function (p) {
-      p.life++; if (p.life > p.max) return; alive++;
-      p.vy += .045; p.vx *= .97; p.vy *= .975; p.x += p.vx + Math.sin(p.life * .06 + p.ph) * .35; p.y += p.vy; p.rot += p.vr;
-      var a = Math.min(1, (p.max - p.life) / 45);
-      if (a <= 0) return;
-      ctx.save(); ctx.globalAlpha = a; ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.scale(1, Math.abs(Math.cos(p.life * .09 + p.ph)) * .8 + .2);
-      ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore();
-    });
-    if (alive) raf = requestAnimationFrame(step); else ctx.clearRect(0, 0, cv.width, cv.height);
-  }
-  window.__confetti = burst;
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (en) {
-      en.forEach(function (e) {
-        if (e.isIntersecting && armed) { armed = false; clearTimeout(timer); timer = setTimeout(burst, 700); }
-        else if (!e.isIntersecting) { armed = true; clearTimeout(timer); }
+    function burst() {
+      fit();
+      var r = word.getBoundingClientRect(), s = sec.getBoundingClientRect();
+      var ox = r.left - s.left + r.width / 2, oy = r.top - s.top + r.height / 2;
+      parts = [];
+      for (var i = 0; i < 90; i++) {
+        var an = -Math.PI / 2 + (Math.random() - .5) * Math.PI * 1.15, v = 3 + Math.random() * 9;
+        parts.push({ x: ox + (Math.random() - .5) * r.width * .8, y: oy, vx: Math.cos(an) * v, vy: Math.sin(an) * v,
+          w: 4 + Math.random() * 4, h: 7 + Math.random() * 5, rot: Math.random() * 6, vr: (Math.random() - .5) * .22,
+          c: cols[i % cols.length], life: 0, max: 170 + Math.random() * 90, ph: Math.random() * 6 });
+      }
+      cancelAnimationFrame(raf); raf = requestAnimationFrame(step);
+    }
+    function step() {
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height); ctx.restore();
+      var alive = 0;
+      parts.forEach(function (p) {
+        p.life++; if (p.life > p.max) return; alive++;
+        p.vy += .045; p.vx *= .97; p.vy *= .975; p.x += p.vx + Math.sin(p.life * .06 + p.ph) * .35; p.y += p.vy; p.rot += p.vr;
+        var a = Math.min(1, (p.max - p.life) / 45);
+        if (a <= 0) return;
+        ctx.save(); ctx.globalAlpha = a; ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.scale(1, Math.abs(Math.cos(p.life * .09 + p.ph)) * .8 + .2);
+        ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore();
       });
-    }, { threshold: 0.6 }).observe(sec);
+      if (alive) raf = requestAnimationFrame(step); else ctx.clearRect(0, 0, cv.width, cv.height);
+    }
+    word.addEventListener('click', function () { clearTimeout(timer); burst(); });
+    sec.__confetti = burst;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (en) {
+        en.forEach(function (e) {
+          if (e.isIntersecting && armed) { armed = false; clearTimeout(timer); timer = setTimeout(burst, 700); }
+          else if (!e.isIntersecting) { armed = true; clearTimeout(timer); }
+        });
+      }, { threshold: 0.6 }).observe(sec);
+    }
   }
+  setup(document.getElementById('intro'));
+  setup(document.getElementById('club'));
 })();
 </script>
 </body>

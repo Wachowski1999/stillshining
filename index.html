@@ -714,7 +714,7 @@ canvas.confetti { position: absolute; inset: 0; width: 100%; height: 100%; point
 (function () {
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   var cols = ['#d3dee3', '#ffffff', '#e5321e', '#ff6a55', '#9fb4bd'];
-  function setup(sec) {
+  function setup(sec, auto) {
     var word = sec.querySelector('.mid'), cv = sec.querySelector('canvas.confetti');
     if (!word || !cv) return;
     var ctx = cv.getContext('2d'), parts = [], raf = 0, timer = 0, armed = true;
@@ -750,7 +750,7 @@ canvas.confetti { position: absolute; inset: 0; width: 100%; height: 100%; point
     }
     word.addEventListener('click', function () { clearTimeout(timer); burst(); });
     sec.__confetti = burst;
-    if ('IntersectionObserver' in window) {
+    if (auto && 'IntersectionObserver' in window) {
       new IntersectionObserver(function (en) {
         en.forEach(function (e) {
           if (e.isIntersecting && armed) { armed = false; clearTimeout(timer); timer = setTimeout(burst, 700); }
@@ -759,8 +759,8 @@ canvas.confetti { position: absolute; inset: 0; width: 100%; height: 100%; point
       }, { threshold: 0.6 }).observe(sec);
     }
   }
-  setup(document.getElementById('intro'));
-  setup(document.getElementById('club'));
+  setup(document.getElementById('intro'), true);
+  setup(document.getElementById('club'), false);
 })();
 </script>
 </body>

@@ -169,12 +169,15 @@ h2 {
   -webkit-tap-highlight-color: transparent;
   transition: background-color .15s, color .15s, border-color .15s;
 }
-.btn:hover, .btn:active { background: var(--white); border-color: var(--white); color: var(--ink); }
+.btn:active { background: var(--white); border-color: var(--white); color: var(--ink); }
+@media (hover: hover) { .btn:hover { background: var(--white); border-color: var(--white); color: var(--ink); } }
 .btn:focus-visible { outline: 3px solid var(--white); outline-offset: 3px; }
 .btn.wide { flex: 1 1 100%; padding: .55rem 1.3rem; background: var(--ice); border-color: var(--ice); color: var(--ink); font-weight: 600; }
-.btn.wide:hover, .btn.wide:active { background: var(--white); border-color: var(--white); color: var(--ink); }
+.btn.wide:active { background: var(--white); border-color: var(--white); color: var(--ink); }
+@media (hover: hover) { .btn.wide:hover { background: var(--white); border-color: var(--white); color: var(--ink); } }
 .btn.solid { background: var(--red-btn); border-color: var(--red-btn); color: var(--white); }
-.btn.solid:hover, .btn.solid:active { background: var(--white); border-color: var(--white); color: var(--red-btn); }
+.btn.solid:active { background: var(--white); border-color: var(--white); color: var(--red-btn); }
+@media (hover: hover) { .btn.solid:hover { background: var(--white); border-color: var(--white); color: var(--red-btn); } }
 
 /* ---------- next button ---------- */
 .stop { padding-bottom: max(5rem, calc(4.4rem + env(safe-area-inset-bottom, 0px))); }
@@ -205,7 +208,8 @@ h2 {
   -webkit-tap-highlight-color: transparent;
   transition: background-color .15s, color .15s, border-color .15s;
 }
-.nx a:hover, .nx a:active { background: var(--white); border-color: var(--white); color: var(--ink); }
+.nx a:active { background: var(--white); border-color: var(--white); color: var(--ink); }
+@media (hover: hover) { .nx a:hover { background: var(--white); border-color: var(--white); color: var(--ink); } }
 .nx a:focus-visible { outline: 3px solid var(--white); outline-offset: 3px; }
 
 /* ---------- 0 intro ---------- */
@@ -569,7 +573,6 @@ h1 {
         <a class="btn" href="https://open.spotify.com/artist/2BQUuySnRDqpQq5Xn7oA4i" target="_blank" rel="noopener noreferrer">sound ↗</a>
       </div>
     </div>
-    <div class="nx"><a href="#arrive">next: getting there ↓</a></div>
   </section>
 
   <section class="stop arrive" id="arrive">

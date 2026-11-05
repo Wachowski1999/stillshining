@@ -635,7 +635,7 @@ h1 {
         </div>
       </div>
     </div>
-    <div class="nx"><a href="#intro">back to top ↑</a></div>
+    <div class="nx"><a id="back" href="#bar">back to stefan's bar ↑</a></div>
   </section>
 </main>
 
@@ -674,10 +674,27 @@ h1 {
   var dots = Array.prototype.slice.call(document.querySelectorAll('.rail a'));
   var stops = Array.prototype.slice.call(document.querySelectorAll('.stop'));
   if ('IntersectionObserver' in window) {
+    var back = document.getElementById('back');
+    var names = { bar: "stefan's bar", club: 'das zimmer' };
+    var atArrive = false, locked = false;
+    function setBack(id) {
+      if (!back) return;
+      back.setAttribute('href', '#' + id);
+      back.textContent = 'back to ' + names[id] + ' \u2191';
+    }
+    /* the jump button on the bar passes the club on its way: remember the bar as origin */
+    var jump = document.querySelector('#bar a[href="#arrive"]');
+    if (jump) jump.addEventListener('click', function () { locked = true; setBack('bar'); });
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (!e.isIntersecting) return;
         var i = stops.indexOf(e.target);
+        if (e.target.id === 'arrive') {
+          atArrive = true;
+        } else if (names[e.target.id]) {
+          if (atArrive) { atArrive = false; locked = false; }
+          if (!locked) setBack(e.target.id);
+        }
         dots.forEach(function (d, j) { d.setAttribute('aria-current', j === i ? 'true' : 'false'); });
       });
     }, { threshold: 0.55 });

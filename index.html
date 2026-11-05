@@ -563,8 +563,11 @@ h1 {
     };
     start();
     video.addEventListener('canplay', start);
-    ['touchstart', 'pointerdown', 'scroll', 'keydown'].forEach(function (ev) {
-      window.addEventListener(ev, start, { once: true, passive: true });
+    var evs = ['touchstart', 'touchend', 'pointerup', 'click', 'scroll', 'keydown'];
+    var retry = function () { start(); };
+    evs.forEach(function (ev) { window.addEventListener(ev, retry, { passive: true }); });
+    video.addEventListener('playing', function () {
+      evs.forEach(function (ev) { window.removeEventListener(ev, retry); });
     });
     document.addEventListener('visibilitychange', function () { if (!document.hidden) start(); });
   }

@@ -724,11 +724,11 @@ h1 {
     var r = word.getBoundingClientRect(), s = sec.getBoundingClientRect();
     var ox = r.left - s.left + r.width / 2, oy = r.top - s.top + r.height / 2;
     parts = [];
-    for (var i = 0; i < 70; i++) {
-      var a = Math.random() * Math.PI * 2, v = 1.2 + Math.random() * 4.2;
-      parts.push({ x: ox + (Math.random() - .5) * r.width * .8, y: oy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2.2,
-        w: 4 + Math.random() * 4, h: 7 + Math.random() * 5, rot: Math.random() * 6, vr: (Math.random() - .5) * .35,
-        c: cols[i % cols.length], life: 0, max: 60 + Math.random() * 40, fall: oy + 120 + Math.random() * 40 });
+    for (var i = 0; i < 90; i++) {
+      var an = -Math.PI / 2 + (Math.random() - .5) * Math.PI * 1.15, v = 3 + Math.random() * 9;
+      parts.push({ x: ox + (Math.random() - .5) * r.width * .8, y: oy, vx: Math.cos(an) * v, vy: Math.sin(an) * v,
+        w: 4 + Math.random() * 4, h: 7 + Math.random() * 5, rot: Math.random() * 6, vr: (Math.random() - .5) * .22,
+        c: cols[i % cols.length], life: 0, max: 170 + Math.random() * 90, ph: Math.random() * 6 });
     }
     cancelAnimationFrame(raf); raf = requestAnimationFrame(step);
   }
@@ -737,11 +737,10 @@ h1 {
     var alive = 0;
     parts.forEach(function (p) {
       p.life++; if (p.life > p.max) return; alive++;
-      p.vy += .16; p.vx *= .985; p.vy *= .985; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
-      var a = Math.min(1, (p.max - p.life) / 25);
-      if (p.y > p.fall) a = Math.max(0, a - (p.y - p.fall) / 30);
+      p.vy += .045; p.vx *= .97; p.vy *= .975; p.x += p.vx + Math.sin(p.life * .06 + p.ph) * .35; p.y += p.vy; p.rot += p.vr;
+      var a = Math.min(1, (p.max - p.life) / 45);
       if (a <= 0) return;
-      ctx.save(); ctx.globalAlpha = a; ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.scale(1, Math.abs(Math.cos(p.life * .18)) * .8 + .2);
+      ctx.save(); ctx.globalAlpha = a; ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.scale(1, Math.abs(Math.cos(p.life * .09 + p.ph)) * .8 + .2);
       ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore();
     });
     if (alive) raf = requestAnimationFrame(step); else ctx.clearRect(0, 0, cv.width, cv.height);

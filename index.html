@@ -179,7 +179,7 @@ h2 {
 .intro .art {
   background: radial-gradient(ellipse at 50% 42%, #a42b20 0%, #6d100d 55%, #2a0705 100%);
 }
-.intro video {
+.intro video, .intro .bgfx {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -195,7 +195,7 @@ h2 {
   background: linear-gradient(to bottom, rgba(9, 12, 17, .45) 0%, rgba(9, 12, 17, 0) 28%, rgba(9, 12, 17, 0) 48%, rgba(9, 12, 17, .78) 88%, var(--ink) 100%);
 }
 @media (min-aspect-ratio: 1/1) {
-  .intro video {
+  .intro video, .intro .bgfx {
     inset: 0 auto 0 50%;
     width: auto;
     height: 100%;
@@ -451,6 +451,7 @@ h1 {
       <video id="bg" autoplay muted loop playsinline preload="auto" poster="img/diamond-poster.jpg" width="464" height="832">
         <source src="vid/diamond.mp4" type="video/mp4">
       </video>
+      <img class="bgfx" id="bgfx" alt="" hidden width="320" height="577">
     </div>
     <div class="scrim" aria-hidden="true"></div>
     <div class="top rise">
@@ -566,9 +567,19 @@ h1 {
     var evs = ['touchstart', 'touchend', 'pointerup', 'click', 'scroll', 'keydown'];
     var retry = function () { start(); };
     evs.forEach(function (ev) { window.addEventListener(ev, retry, { passive: true }); });
+    var fx = document.getElementById('bgfx');
     video.addEventListener('playing', function () {
       evs.forEach(function (ev) { window.removeEventListener(ev, retry); });
+      if (fx) { fx.hidden = true; fx.removeAttribute('src'); video.style.visibility = ''; }
     });
+    /* autoplay blocked (e.g. low power mode): show the animated image instead; the video takes over on first tap */
+    setTimeout(function () {
+      if (video.paused && fx) {
+        fx.src = 'img/diamond-anim.webp';
+        fx.hidden = false;
+        video.style.visibility = 'hidden';
+      }
+    }, 1500);
     document.addEventListener('visibilitychange', function () { if (!document.hidden) start(); });
   }
 
